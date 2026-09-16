@@ -5,7 +5,6 @@
 package com.linkedin.kafka.cruisecontrol.executor;
 
 import com.linkedin.cruisecontrol.common.utils.Utils;
-import com.linkedin.kafka.cruisecontrol.KafkaCruiseControlUtils;
 import com.linkedin.kafka.cruisecontrol.config.KafkaCruiseControlConfig;
 import com.linkedin.kafka.cruisecontrol.executor.concurrency.ExecutionConcurrencyManager;
 import com.linkedin.kafka.cruisecontrol.executor.strategy.BaseReplicaMovementStrategy;
@@ -393,13 +392,11 @@ public class ExecutionTaskPlanner {
             maxPartitionMovesReached = true;
             break;
           }
-          // Skip this proposal if either source broker or destination broker of this proposal has already
-          // involved in this round.
+          // Skip this proposal if the source broker of this proposal has already been involved in this round.
           int sourceBroker = task.proposal().oldLeader().brokerId();
           Set<Integer> destinationBrokers = task.proposal().replicasToAdd().stream().mapToInt(ReplicaPlacementInfo::brokerId)
                                                 .boxed().collect(Collectors.toSet());
-          if (brokerInvolved.contains(sourceBroker)
-              || KafkaCruiseControlUtils.containsAny(brokerInvolved, destinationBrokers)) {
+          if (brokerInvolved.contains(sourceBroker)) {
             continue;
           }
           TopicPartition tp = task.proposal().topicPartition();

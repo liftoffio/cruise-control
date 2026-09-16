@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.kafka.common.TopicPartition;
 
 import static com.linkedin.cruisecontrol.common.utils.Utils.validateNotNull;
@@ -201,6 +202,15 @@ public class Broker implements Serializable, Comparable<Broker> {
    */
   public int numLeadersFor(String topicName) {
     return (int) replicasOfTopicInBroker(topicName).stream().filter(Replica::isLeader).count();
+  }
+
+  /**
+   * Get leader replicas for topic.
+   * @param topic Topic of the requested replicas.
+   * @return Leader replicas in this broker sharing the given topic.
+   */
+  public Collection<Replica> leadersFor(String topic) {
+    return replicasOfTopicInBroker(topic).stream().filter(Replica::isLeader).collect(Collectors.toList());
   }
 
   /**
